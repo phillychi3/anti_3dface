@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
-CASC_PATH = 'haarcascade_frontalface_default.xml'
+import os
+fontpath = os.path.abspath(os.path.dirname(__file__))
+CASC_PATH = f'{fontpath}\haarcascade_frontalface_default.xml'
 font = ImageFont.truetype('GenWanMin-L.ttc', 20)
 
 cv2.useOptimized()
@@ -27,7 +29,7 @@ def detect():
         if not video_capture.isOpened():
             print('找不到相機')
             pass
-        ret, frame = video_capture.read()
+        _, frame = video_capture.read()
         grayimage = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_detect(grayimage)
         if faces is not None:

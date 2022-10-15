@@ -11,7 +11,7 @@ setuptools.setup(
     url="https://github.com/phillychi3/anti_3dface",
     packages=setuptools.find_packages(),
     package_data={
-        'anti3dface': ['GenWanMin-L.ttc'],
+        'anti3dface': ['GenWanMin-L.ttc','haarcascade_frontalface_default.xml'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",

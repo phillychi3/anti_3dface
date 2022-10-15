@@ -2,8 +2,8 @@ import os
 import cv2
 import numpy as np
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
-CASC_PATH = 'haarcascade_frontalface_default.xml'
 fontpath = os.path.abspath(os.path.dirname(__file__))
+CASC_PATH = f'{fontpath}\haarcascade_frontalface_default.xml'
 font = ImageFont.truetype(f'{fontpath}/GenWanMin-L.ttc', 20)
 
 cascade_classifier = cv2.CascadeClassifier(CASC_PATH)
