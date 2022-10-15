@@ -1,4 +1,4 @@
-import os
+import os,io
 import cv2
 import numpy as np
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
@@ -9,7 +9,7 @@ font = ImageFont.truetype(f'{fontpath}/GenWanMin-L.ttc', 20)
 cascade_classifier = cv2.CascadeClassifier(CASC_PATH)
 
 
-def face_detect(image):
+def _face_detect(image):
     faces = cascade_classifier.detectMultiScale(
         image,
         scaleFactor=1.1,
@@ -22,7 +22,7 @@ def face_detect(image):
         return faces
 
 
-def addimage(image, pos, size):
+def _addimage(image, pos, size):
     pilimage = Image.open(image)
     blurimage = pilimage.crop((pos[0], pos[1], pos[0]+size[0], pos[1]+size[1]))
     blurimage = blurimage.filter(ImageFilter.GaussianBlur(radius=10))
@@ -35,13 +35,13 @@ def addimage(image, pos, size):
     w, _ = imdraw.textsize(text, font=font)
     imdraw.text((pos[0]+(size[0]-w)/2, pos[1]+size[1]/2),
                 text, fill=(255, 255, 255), font=font)
-    im.save('result.jpg')
+    return im
 
 
-def test(image):
+def detect_image(image):
     image = cv2.imread(image)
     grayimage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_detect(grayimage)
+    faces = _face_detect(grayimage)
     print(faces)
     x = faces[0][0]
     y = faces[0][1]
@@ -51,7 +51,11 @@ def test(image):
     #     cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 0)
     cv2.imwrite("head.jpg", image)
     print(x, y)
-    addimage("head.jpg", (x, y), (w, h))
+    im = _addimage("head.jpg", (x, y), (w, h))
+    imgbytes = io.BytesIO()
+    im.save(imgbytes, format='jpg')
+    return imgbytes.getvalue()
 
 
-test('166367627499159_P18725683.jpg')
+
+detect_image('166367627499159_P18725683.jpg')

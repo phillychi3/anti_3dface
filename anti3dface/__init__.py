@@ -1,1 +1,1 @@
-from detectface import *
+from detectface import detect_image
