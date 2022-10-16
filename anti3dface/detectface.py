@@ -55,7 +55,3 @@ def detect_image(image):
     imgbytes = io.BytesIO()
     im.save(imgbytes, format='jpg')
     return imgbytes.getvalue()
-
-
-
-detect_image('166367627499159_P18725683.jpg')
