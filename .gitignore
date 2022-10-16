@@ -1,3 +1,11 @@
 *.jpg
 *.png
 *.pyc
+
+*.egg-info/
+*.egg
+.eggs/
+docs/_build/
+build/
+dist/
+htmlcov/
