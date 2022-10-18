@@ -16,13 +16,12 @@ def _face_detect(image):
         minNeighbors=5,
     )
     if not len(faces) > 0:
-        print('no face')
-        exit()
+        raise Exception('No faces found')
     else:
         return faces
 
 
-def _addimage(image, pos, size):
+def _addvague(image, pos, size):
     pilimage = Image.fromarray(image)
     blurimage = pilimage.crop((pos[0], pos[1], pos[0]+size[0], pos[1]+size[1]))
     blurimage = blurimage.filter(ImageFilter.GaussianBlur(radius=10))
@@ -37,8 +36,18 @@ def _addimage(image, pos, size):
                 text, fill=(255, 255, 255), font=font)
     return im
 
+def _addface(image, pos, size, fimage):
+    pilimage = Image.fromarray(image)
+    faceimage = Image.open(fimage)
+    faceimage = faceimage.resize((size[0]+20, size[1]+20))
+    im = Image.new(
+        'RGBA', (pilimage.size[0], pilimage.size[1]), (255, 255, 255, 0))
+    im.paste(pilimage, (0, 0))
+    im.paste(faceimage, (pos[0]-10, pos[1]-10), faceimage)
+    return im
 
-def detect_image(image):
+
+def detect_image(image,mode = 'vague',fimage = None):
     image = cv2.imread(image)
     grayimage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = _face_detect(grayimage)
@@ -46,9 +55,9 @@ def detect_image(image):
     y = faces[0][1]
     w = faces[0][2]
     h = faces[0][3]
-    # for (x, y, w, h) in faces:
-    #     cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 0)
-    # change image color to RGB
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    im = _addimage(image, (x, y), (w, h))
+    if mode == 'vague':
+        im = _addvague(image, (x, y), (w, h))
+    elif mode == 'image':
+        im = _addface(image, (x, y), (w, h),fimage)
     return im
