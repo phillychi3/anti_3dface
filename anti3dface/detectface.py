@@ -12,8 +12,10 @@ cascade_classifier = cv2.CascadeClassifier(CASC_PATH)
 class Anti3dface():
 
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self,mode='vague',fimage = None) -> None:
+        self.mode = mode
+        self.fimage = fimage
+        
 
     def _face_detect(self,image):
         faces = cascade_classifier.detectMultiScale(
@@ -53,7 +55,7 @@ class Anti3dface():
         return im
 
 
-    def detect_image(self,image,mode = 'vague',fimage = None):
+    def detect_image(self,image):
         if isinstance(image, str):
             image = cv2.imread(image)
         else:
@@ -68,8 +70,8 @@ class Anti3dface():
         w = faces[0][2]
         h = faces[0][3]
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        if mode == 'vague':
+        if self.mode == 'vague':
             im = self._addvague(image, (x, y), (w, h))
-        elif mode == 'image':
-            im = self._addface(image, (x, y), (w, h),fimage)
+        elif self.mode == 'image':
+            im = self._addface(image, (x, y), (w, h),self.fimage)
         return im
