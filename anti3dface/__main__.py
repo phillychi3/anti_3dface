@@ -3,6 +3,10 @@ from tkinter import *
 import pyscreenshot as ImageGrab
 import time
 from detectface import Anti3dface
+import cv2
+import numpy as np
+from io import BytesIO
+import threading
 a3d = Anti3dface()
 
 windows = []
@@ -18,7 +22,7 @@ def createwindows(x,y,w,h):
     global tk
     global canvas
     tk.title("Anti3DFace")
-    tk.geometry(f"{x}x{y}+{w}+{h}")
+    tk.geometry(f"{w}x{h}+{x}+{y}")
     tk.resizable(0, 0)
     #tk.overrideredirect(1)
 
@@ -33,16 +37,26 @@ def createwindows(x,y,w,h):
 
 def main():
     while True:
-        if windows != []:
-            windows[0].destroy()
-            windows.clear()
+    
+
         img = ImageGrab.grab()
-        faces = a3d._face_detect(img)
-        x = faces[0][0]
-        y = faces[0][1]
-        w = faces[0][2]
-        h = faces[0][3]
-        newwindows = createwindows(x,y,w,h)
-        windows.append(newwindows)
+        buffer = BytesIO()
+        img.save(buffer, 'png')
+        buffer.seek(0)
+        array = np.asarray(bytearray(buffer.read()), dtype=np.uint8)
+        img = cv2.imdecode(array, cv2.IMREAD_COLOR)
+        grayimage = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        try:
+            faces = a3d._face_detect(grayimage)
+            x = faces[0][0]
+            y = faces[0][1]
+            w = faces[0][2]
+            h = faces[0][3]
+            newwindows = createwindows(x,y,w,h)
+
+            windows.append(t)
+        except:
+            pass
+        print(windows)
         time.sleep(1)
 main()
