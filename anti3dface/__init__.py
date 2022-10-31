@@ -1,1 +1,1 @@
-from .detectface import detect_image
+from .detectface import Anti3dface
