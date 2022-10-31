@@ -48,7 +48,13 @@ def _addface(image, pos, size, fimage):
 
 
 def detect_image(image,mode = 'vague',fimage = None):
-    image = cv2.imread(image)
+    if isinstance(image, str):
+        image = cv2.imread(image)
+    else:
+        image = np.fromstring(image, np.uint8)
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+
+
     grayimage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = _face_detect(grayimage)
     x = faces[0][0]
