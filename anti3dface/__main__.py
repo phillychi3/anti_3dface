@@ -9,36 +9,52 @@ from io import BytesIO
 import threading
 a3d = Anti3dface()
 
-windows = []
-tk = Tk()
-transcoloe = "gray"
-tk.wm_attributes("-transparentcolor", transcoloe)
-def on_resize(event):
-    tk.configure(width=event.width, height=event.height)
-    canvas.create_rectangle(0,0,event.width,event.height,fill=transcoloe,outline=transcoloe)
+class gui(threading.Thread):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.tk = Tk()
+        self.transcoloe = "gray"
+        self.tk.wm_attributes("-transparentcolor", self.transcoloe)
+        self.canvas = None
+        self._stop_event = threading.Event()
+    
+    def stop(self):
+        self.tk.destroy()
+        self._stop_event.set()
+    
+    def stopped(self):
+        return self._stop_event.is_set()
 
 
-def createwindows(x,y,w,h):
-    global tk
-    global canvas
-    tk.title("Anti3DFace")
-    tk.geometry(f"{w}x{h}+{x}+{y}")
-    tk.resizable(0, 0)
-    #tk.overrideredirect(1)
+    def on_resize(self,event):
+        self.tk.configure(width=event.width, height=event.height)
+        self.canvas.create_rectangle(0,0,event.width,event.height,fill=self.transcoloe,outline=self.transcoloe)
 
-    canvas = Canvas(tk)
-    canvas.pack(fill=BOTH, expand=YES)
-    canvas.create_rectangle(0,0,canvas.winfo_width(),canvas.winfo_height(),fill=transcoloe,outline=transcoloe)
-    canvas.configure(highlightthickness = 0)
-    tk.bind("<Configure>", on_resize)
-    tk.mainloop()
-    return tk
+    
+
+
+    def createwindows(self,x,y,w,h):
+        self.tk.title("Anti3DFace")
+        self.tk.geometry(f"{w}x{h}+{x}+{y}")
+        self.tk.resizable(0, 0)
+        #tk.overrideredirect(1)
+
+        self.canvas = Canvas(self.tk)
+        self.canvas.pack(fill=BOTH, expand=YES)
+        self.canvas.create_rectangle(0,0,self.canvas.winfo_width(),self.canvas.winfo_height(),fill=self.transcoloe,outline=self.transcoloe)
+        self.canvas.configure(highlightthickness = 0)
+        self.tk.bind("<Configure>", self.on_resize)
+        self.tk.mainloop()
+        return self.tk
 
 
 def main():
+    works = []
     while True:
-    
-
+        #kill worls
+        if works != []:
+            for i in works:
+                i.join()
         img = ImageGrab.grab()
         buffer = BytesIO()
         img.save(buffer, 'png')
@@ -52,11 +68,10 @@ def main():
             y = faces[0][1]
             w = faces[0][2]
             h = faces[0][3]
-            newwindows = createwindows(x,y,w,h)
-
-            windows.append(t)
+            tmp = threading.Thread(target=gui().createwindows,args=(x,y,w,h))
+            works.append(tmp)
+            tmp.start()
         except:
             pass
-        print(windows)
         time.sleep(1)
 main()
