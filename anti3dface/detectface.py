@@ -12,9 +12,10 @@ cascade_classifier = cv2.CascadeClassifier(CASC_PATH)
 class Anti3dface():
 
 
-    def __init__(self,mode='vague',fimage = None) -> None:
+    def __init__(self,mode='vague',fimage = None,*args,**kwargs) -> None:
         self.mode = mode
         self.fimage = fimage
+        self.text = kwargs.get('text','違反數位中介法')
         
 
     def _face_detect(self,image):
@@ -38,7 +39,7 @@ class Anti3dface():
         im.paste(pilimage, (0, 0))
         im.paste(blurimage, (pos[0], pos[1]))
         imdraw = ImageDraw.Draw(im)
-        text = '違反數位中介法'
+        text  = self.text
         w, _ = imdraw.textsize(text, font=font)
         imdraw.text((pos[0]+(size[0]-w)/2, pos[1]+size[1]/2),
                     text, fill=(255, 255, 255), font=font)
